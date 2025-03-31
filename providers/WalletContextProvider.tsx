@@ -1,13 +1,13 @@
 "use client";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+
+import { FC, ReactNode } from "react";
 import {
   ConnectionProvider,
   WalletProvider,
 } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import "@solana/wallet-adapter-react-ui/styles.css";
 import { clusterApiUrl } from "@solana/web3.js";
-import * as React from "react";
-import { useMemo } from "react";
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
@@ -15,20 +15,20 @@ import {
   TrustWalletAdapter,
   CoinbaseWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
-import "@solana/wallet-adapter-react-ui/styles.css";
+import { useMemo } from "react";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { useWallet } from "@solana/wallet-adapter-react";
 
-export function AppWalletProvider({ children }: { children: React.ReactNode }) {
-  const network =
-    process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true"
-      ? WalletAdapterNetwork.Devnet
-      : WalletAdapterNetwork.Mainnet;
+const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const network = WalletAdapterNetwork.Mainnet;
 
-  const endpoint = useMemo(() => {
-    return process.env.NEXT_PUBLIC_SOLANA_RPC_ENDPOINT
-      ? process.env.NEXT_PUBLIC_SOLANA_RPC_ENDPOINT
-      : clusterApiUrl(network);
-  }, [network]);
+  //initiate auto connect
+  const { autoConnect } = useWallet();
 
+  // You can also provide a custom RPC endpoint.
+  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+
+  //wallets
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),
@@ -37,10 +37,9 @@ export function AppWalletProvider({ children }: { children: React.ReactNode }) {
       new TrustWalletAdapter(),
       new CoinbaseWalletAdapter(),
     ],
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [network]
   );
+
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
@@ -48,4 +47,6 @@ export function AppWalletProvider({ children }: { children: React.ReactNode }) {
       </WalletProvider>
     </ConnectionProvider>
   );
-}
+};
+
+export default WalletContextProvider;
