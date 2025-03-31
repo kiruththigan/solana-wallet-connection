@@ -3,7 +3,13 @@ import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import {
@@ -19,7 +25,7 @@ export function toFixed(num: number, fixed: number): string {
   return num.toString().match(re)![0];
 }
 
-const WalletConnection = () => {
+const WalletConnectionCustom = () => {
   const { connection } = useConnection();
   const { select, wallets, publicKey, disconnect, connecting } = useWallet();
 
@@ -65,7 +71,6 @@ const WalletConnection = () => {
   const handleDisconnect = async () => {
     disconnect();
   };
-
 
   return (
     <div className="text-white">
@@ -114,6 +119,9 @@ const WalletConnection = () => {
               borderRadius: "30px",
             }}
           >
+            <DialogHeader>
+              <DialogTitle>Wallet Connect</DialogTitle>
+            </DialogHeader>
             <div className="flex w-full justify-center items-center ">
               <div className="flex flex-col justify-start items-center space-y-5  w-[300px] md:w-[400px] overflow-y-auto ">
                 {wallets.map((wallet) => (
@@ -147,4 +155,4 @@ const WalletConnection = () => {
   );
 };
 
-export default WalletConnection;
+export default WalletConnectionCustom;
